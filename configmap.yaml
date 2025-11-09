@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cat-api-config
+  namespace: cat-api-ns
+data:
+  

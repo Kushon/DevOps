@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-api-deployment
+  namespace: cat-api-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cat-api
+  template:
+    metadata:
+      labels:
+        app: cat-api
+    spec:
+      containers:
+      - name: cat-api
+        image: cat-api:latest 
+        imagePullPolicy: Never 
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: cat-api-config
