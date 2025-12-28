@@ -4,4 +4,6 @@ metadata:
   name: cat-api-config
   namespace: cat-api-ns
 data:
-  
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "postgres"

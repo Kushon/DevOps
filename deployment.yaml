@@ -19,6 +19,36 @@ spec:
         imagePullPolicy: Never 
         ports:
         - containerPort: 8000
-        envFrom:
-        - configMapRef:
-            name: cat-api-config
+        env:
+          # 1. Extract values from Secret
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secrets
+                key: POSTGRES_USER
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secrets
+                key: POSTGRES_PASSWORD
+          
+          # 2. Extract values from ConfigMap
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: cat-api-config
+                key: DB_HOST
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: cat-api-config
+                key: DB_PORT
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: cat-api-config
+                key: DB_NAME
+
+          # 3. Construct the final DATABASE_URL using $(VAR) syntax
+          - name: DATABASE_URL
+            value: "postgresql+asyncpg://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
