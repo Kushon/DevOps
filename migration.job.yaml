@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cat-api-migration-job
+  namespace: cat-api-ns
+spec:
+  template:
+    spec:
+      containers:
+      - name: migration
+        image: cat-api:latest  # Same image as your app
+        imagePullPolicy: Never # Using local minikube images
+        command: ["uv", "run", "--group", "migrations", "alembic", "upgrade", "head"]
+        envFrom:
+        - secretRef:
+            name: postgres-secrets
+        - configMapRef:
+            name: cat-api-config
+        env:
+          - name: DATABASE_URL
+            value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+      restartPolicy: OnFailure
+  backoffLimit: 4
