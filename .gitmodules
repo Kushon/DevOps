@@ -1,0 +1,3 @@
+[submodule "cat-api-prototype"]
+	path = cat-api-prototype
+	url = ./cat-api-prototype
