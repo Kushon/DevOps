@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "back.fullname" . }}-service
+  namespace: {{ .Values.namespace | default $.Values.global.namespace | default .Release.Namespace }}
+  labels:
+    {{ include "back.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{ include "back.selectorLabels" . | nindent 4 }}
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }}

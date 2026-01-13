@@ -1,0 +1,109 @@
+# Global values for cat-api umbrella chart
+# These values are shared across all subcharts (back, postgres)
+
+global:
+  # Global namespace for all resources
+  namespace: "cat-api-ns"
+  
+  # Global image settings
+  image:
+    registry: ""
+    pullPolicy: "IfNotPresent"
+  
+  # Global secret management (placeholder for Vault/helm-secrets integration)
+  secret:
+    # If using external secrets (e.g., Vault via helm-secrets), set externalSecret to true
+    externalSecret: false
+    # Reference path for Vault/helm-secrets (e.g., "secret/data/cat-api/...")
+    vaultPath: ""
+
+# Ingress configuration for the application
+ingress:
+  enabled: true
+  # Ingress class name (e.g., "nginx", "traefik")
+  ingressClassName: "nginx"
+  # Host(s) for the ingress
+  hosts:
+    - host: "cat-api.local"
+      paths:
+        - path: "/"
+          pathType: "Prefix"
+  # TLS configuration (optional)
+  tls: []
+  # - secretName: cat-api-tls
+  #   hosts:
+  #     - "192.168.49.2"
+  
+  # Annotations for the ingress resource
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+
+# Subchart: back (cat-api backend application)
+back:
+  enabled: true
+  # Override namespace for this subchart (uses global.namespace if not set)
+  namespace: ""
+  
+  # Deployment replicas
+  replicas: 1
+  
+  # Image configuration for cat-api backend
+  image:
+    repository: "cat-api"
+    tag: "latest"
+    pullPolicy: "Never"
+  
+  # Service configuration
+  service:
+    type: "ClusterIP"
+    port: 8000
+    targetPort: 8000
+  
+  # Database connection settings
+  database:
+    # Connection pooling and connection string format
+    protocol: "postgresql+asyncpg"
+    # Database hostname (should resolve to postgres service)
+    host: "cat-api-release-postgres-service"
+    port: "5432"
+    name: "postgres"
+    # User and password come from secrets (see below)
+    secretRef:
+      name: "app-postgres-secrets"
+      userKey: "POSTGRES_USER"
+      passwordKey: "POSTGRES_PASSWORD"
+
+# Subchart: postgres (PostgreSQL database)
+postgres:
+  enabled: true
+  # Override namespace for this subchart (uses global.namespace if not set)
+  namespace: ""
+  
+  # Use the postgres chart values (see charts/postgres/values.yaml)
+  # This section can override any default postgres subchart values
+  service:
+    type: "ClusterIP"
+    clusterIP: "None"
+    ports:
+      port: 5432
+      targetPort: 5432
+  
+  image:
+    registry: ""
+    repository: "postgres"
+    tag: "15"
+    pullPolicy: "IfNotPresent"
+  
+  secret:
+    POSTGRES_PASSWORD: "postgres"
+    POSTGRES_USER: "postgres"
+  
+  config:
+    POSTGRES_DB: "postgres"
+  
+  statefulset:
+    replicas: 1
+    pvc:
+      mountPath: "/var/lib/postgresql/data"
+      accessModes: ["ReadWriteOnce"]
+      storage: "5Gi"

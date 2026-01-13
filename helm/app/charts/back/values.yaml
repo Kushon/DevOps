@@ -1,0 +1,73 @@
+# Values for cat-api backend (back) subchart
+# These values override or extend the global values from the parent chart
+
+# Namespace can be overridden; if empty, uses global.namespace from parent values
+namespace: ""
+
+# Deployment replicas
+replicas: 1
+
+# Image configuration for cat-api backend
+image:
+  repository: "cat-api"
+  tag: "latest"
+  pullPolicy: "Never"
+
+# Service configuration
+service:
+  type: "ClusterIP"
+  port: 8000
+  targetPort: 8000
+  annotations: {}
+
+# Database connection settings
+database:
+  # Connection protocol
+  protocol: "postgresql+asyncpg"
+  # Database hostname (uses postgres service in the same namespace by default)
+  host: "app-postgres-service"
+  port: "5432"
+  name: "postgres"
+  # Reference to the secret containing database credentials
+  secretRef:
+    # Name of the secret resource (usually created by postgres subchart)
+    name: "app-postgres-secrets"
+    # Key in the secret for database user
+    userKey: "POSTGRES_USER"
+    # Key in the secret for database password
+    passwordKey: "POSTGRES_PASSWORD"
+
+# Deployment labels and annotations
+labels:
+  app: "cat-api"
+  version: "1.0"
+
+annotations:
+  prometheus.io/scrape: "false"
+
+# Resource limits and requests (optional)
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+# Pod security and configuration
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+
+# Liveness and readiness probes
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false
+
+# Environment variables (in addition to database connection vars)
+env:
+  # Add custom environment variables here
+  - name: "LOG_LEVEL"
+    value: "INFO"

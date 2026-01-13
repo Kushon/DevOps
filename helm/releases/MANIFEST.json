@@ -1,0 +1,87 @@
+{
+  "release": {
+    "version": "0.1.0",
+    "date": "2026-01-12T19:35:16+03:00",
+    "name": "cat-api-charts",
+    "description": "Initial release of cat-api Helm charts"
+  },
+  "charts": [
+    {
+      "name": "app",
+      "version": "0.1.0",
+      "appVersion": "1.16.0",
+      "type": "application",
+      "kind": "umbrella",
+      "description": "Umbrella Helm chart for cat-api application with backend and PostgreSQL database",
+      "file": "app-0.1.0.tgz",
+      "size": "8.0K",
+      "dependencies": [
+        {
+          "name": "back",
+          "version": "0.1.0"
+        },
+        {
+          "name": "postgres",
+          "version": "0.1.0"
+        }
+      ]
+    },
+    {
+      "name": "back",
+      "version": "0.1.0",
+      "appVersion": "1.16.0",
+      "type": "application",
+      "kind": "subchart",
+      "description": "Helm chart for cat-api backend application (FastAPI)",
+      "file": "back-0.1.0.tgz",
+      "size": "4.0K",
+      "dependencies": []
+    },
+    {
+      "name": "postgres",
+      "version": "0.1.0",
+      "appVersion": "15.0",
+      "type": "application",
+      "kind": "subchart",
+      "description": "Helm chart for PostgreSQL 15 StatefulSet with persistent storage",
+      "file": "postgres-0.1.0.tgz",
+      "size": "4.0K",
+      "dependencies": []
+    }
+  ],
+  "resources": {
+    "generated": 9,
+    "types": [
+      "Deployment",
+      "StatefulSet",
+      "Service",
+      "Secret",
+      "ConfigMap",
+      "PersistentVolumeClaim",
+      "Ingress",
+      "Pod"
+    ],
+    "totalManifestLines": 297
+  },
+  "validation": {
+    "templates": "PASSED",
+    "archives": "PASSED",
+    "integrity": "PASSED",
+    "dryRun": "PASSED"
+  },
+  "namespace": "cat-api-ns",
+  "repository": {
+    "type": "local",
+    "path": "file:///Users/mariakochenkova/Documents/PROJECTS/DevOps/helm/releases",
+    "indexFile": "index.yaml"
+  },
+  "scripts": {
+    "install": "install.sh",
+    "verify": "verify.sh"
+  },
+  "documentation": {
+    "readme": "README.md",
+    "changelog": "CHANGELOG.md",
+    "manifest": "MANIFEST.json"
+  }
+}

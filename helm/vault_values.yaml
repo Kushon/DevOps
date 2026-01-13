@@ -1,0 +1,4 @@
+postgres:
+  secret:
+    POSTGRES_PASSWORD: ref+vault:secret/data/db#POSTGRES_PASSWORD
+    POSTGRES_USER: ref+vault:secret/data/db#POSTGRES_USER

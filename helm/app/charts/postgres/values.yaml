@@ -1,0 +1,32 @@
+# Chart values for postgres
+# Follow best practices: explicit image fields, quoted strings where appropriate,
+# standard labels come from templates/helpers, and use dicts for single-entry configs.
+
+service:
+  type: ClusterIP
+  clusterIP: None
+  # Ports as a dictionary (not a list) for simple single-port services
+  ports:
+    port: 5432
+    targetPort: 5432
+
+image:
+  # If you use a private registry, set registry (e.g. "ghcr.io/org" or "docker.io")
+  registry: ""
+  repository: "postgres"
+  tag: "15"
+  pullPolicy: "IfNotPresent"
+
+secret:
+  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_USER: "postgres"
+
+config:
+  POSTGRES_DB: "postgres"
+
+statefulset:
+  replicas: 1
+  pvc:
+    mountPath: "/var/lib/postgresql/data"
+    accessModes: ["ReadWriteOnce"]
+    storage: "5Gi"

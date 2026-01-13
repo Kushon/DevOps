@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "postgres.fullname" . }}-statefulset
+  labels:
+    {{ include "postgres.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "postgres.fullname" . }}-service
+  replicas: {{ .Values.statefulset.replicas }}
+  selector:
+    matchLabels:
+      {{ include "postgres.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{ include "postgres.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ include "postgres.name" . }}
+        image: {{ if .Values.image.registry }}{{ .Values.image.registry }}/{{ end }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.ports.port }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "postgres.fullname" . }}-config
+        - secretRef:
+            name: {{ include "postgres.fullname" . }}-secrets
+        volumeMounts:
+        - name: {{ include "postgres.fullname" . }}-storage
+          mountPath: {{ .Values.statefulset.pvc.mountPath }}
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "postgres.fullname" . }}-storage
+    spec:
+      accessModes:
+    {{ toYaml .Values.statefulset.pvc.accessModes | nindent 8 }}
+      resources:
+        requests:
+          storage: {{ .Values.statefulset.pvc.storage }}
