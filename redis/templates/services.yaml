@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: redis
+    role: master
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+    role: master
+  ports:
+  - port: {{ .Values.service.master.port }}
+    targetPort: 6379
+    name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-replicas
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: redis
+    role: replica
+spec:
+  type: {{ .Values.service.replicas.type }}
+  selector:
+    app: redis
+    role: replica
+  ports:
+  - port: {{ .Values.service.replicas.port }}
+    targetPort: 6379
+    name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-balancer
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: redis
+    role: balancer
+spec:
+  type: {{ .Values.service.balancer.type }}
+  selector:
+    app: redis
+  ports:
+  - port: {{ .Values.service.balancer.port }}
+    targetPort: 6379
+    name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-ui
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: redis
+    role: ui
+spec:
+  type: LoadBalancer
+  selector:
+    app: redis
+  ports:
+  - port: 5540
+    targetPort: 5540
+    name: redisinsight

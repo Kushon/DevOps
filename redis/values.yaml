@@ -1,0 +1,38 @@
+# Redis Helm Chart Values
+
+image:
+  repository: redis/redis-stack-server
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+namespace: redis
+
+replicaCount: 3
+
+# Redis authentication
+auth:
+  enabled: false
+  password: ""
+
+service:
+  master:
+    type: ClusterIP
+    port: 6379
+  replicas:
+    type: ClusterIP
+    port: 6379
+  balancer:
+    type: LoadBalancer
+    port: 6379
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

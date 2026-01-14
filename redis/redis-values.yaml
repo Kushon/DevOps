@@ -1,0 +1,63 @@
+# Bitnami Redis Helm Chart Values
+# For more options, see: https://github.com/bitnami/charts/tree/main/bitnami/redis
+
+# Global settings
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  security:
+    allowInsecureImages: true
+
+# Redis image
+image:
+  registry: docker.io
+  repository: library/redis
+  tag: "7-alpine"
+  pullPolicy: IfNotPresent
+
+# Architecture: standalone or replication
+architecture: replication
+
+# Authentication
+auth:
+  enabled: false
+
+# Master settings
+master:
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Replica settings (for replication architecture)
+replica:
+  replicaCount: 2
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 6379
+  nodePorts:
+    redis: ""
+
+# Sentinel (optional, for high availability)
+sentinel:
+  enabled: false
