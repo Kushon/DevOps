@@ -8,8 +8,8 @@ spec:
     spec:
       containers:
       - name: migration
-        image: cat-api:latest  # Same image as your app
-        imagePullPolicy: Never # Using local minikube images
+        image: cat-api:latest  
+        imagePullPolicy: Never
         command: ["uv", "run", "--group", "migrations", "alembic", "upgrade", "head"]
         envFrom:
         - secretRef:

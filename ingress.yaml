@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: 192.168.49.2
+  - host: 192.168.105.2
     http:
       paths:
       - path: /
@@ -16,4 +16,4 @@ spec:
           service:
             name: cat-api-service
             port:
-              number: 8000 # Matches the 'port' in your Service manifest
+              number: 8000
