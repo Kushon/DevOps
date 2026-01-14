@@ -1,0 +1,14 @@
+auth:
+  enabled: true
+  username: admin
+  password: ""  # Will be read from existingSecret
+  existingSecret: rabbitmq-secret
+  existingPasswordKey: password
+  existingErlangCookieKey: erlang-cookie
+
+ingress:
+  enabled: false
+
+
+service:
+    type: LoadBalancer
