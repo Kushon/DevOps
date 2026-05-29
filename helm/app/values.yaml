@@ -64,7 +64,7 @@ back:
     # Connection pooling and connection string format
     protocol: "postgresql+asyncpg"
     # Database hostname (should resolve to postgres service)
-    host: "cat-api-release-postgres-service"
+    host: "cat-api-postgres-service"
     port: "5432"
     name: "postgres"
     # User and password come from secrets (see below)
