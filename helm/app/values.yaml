@@ -21,7 +21,7 @@ global:
 ingress:
   enabled: true
   # Ingress class name (e.g., "nginx", "traefik")
-  ingressClassName: "nginx"
+  ingressClassName: "traefik"
   # Host(s) for the ingress
   hosts:
     - host: "cat-api.local"
@@ -35,8 +35,7 @@ ingress:
   #     - "192.168.49.2"
   
   # Annotations for the ingress resource
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "/"
+  annotations: {}
 
 # Subchart: back (cat-api backend application)
 back:

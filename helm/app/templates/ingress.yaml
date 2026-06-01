@@ -24,8 +24,8 @@ spec:
         pathType: {{ .pathType }}
         backend:
           service:
-            # Reference to the back subchart service
-            name: {{ include "app.fullname" $ }}-back-service
+            # Reference to the back subchart service (back.fullname = <release>-back)
+            name: {{ $.Release.Name }}-back-service
             port:
               number: {{ $.Values.back.service.port }}
       {{- end }}
