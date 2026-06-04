@@ -1,0 +1,26 @@
+apiVersion: locust.io/v2
+kind: LocustTest
+metadata:
+  name: {{ .Values.locustTest.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: locust
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  image: {{ .Values.locustTest.image | quote }}
+  imagePullPolicy: {{ .Values.locustTest.imagePullPolicy | quote }}
+  # ConfigMap с locustfile.py (монтируется в /lotest/src/)
+  testFiles:
+    configMapRef: {{ .Values.locustTest.name }}-locustfile
+  master:
+    # Настройки, аналогичные Части 2: users / spawn-rate / run-time / host.
+    # Оператор сам добавит --master, --autostart, --autoquit (web UI на 8089).
+    command: >-
+      --locustfile /lotest/src/locustfile.py
+      --host {{ .Values.locustTest.targetHost }}
+      --users {{ .Values.locustTest.users }}
+      --spawn-rate {{ .Values.locustTest.spawnRate }}
+      --run-time {{ .Values.locustTest.runTime }}
+  worker:
+    command: "--locustfile /lotest/src/locustfile.py"
+    replicas: {{ .Values.locustTest.workerReplicas }}

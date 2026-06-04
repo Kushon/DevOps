@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # Имя строго load-test-v2-webui (как требует задание для Ingress)
+  name: {{ .Values.locustTest.name }}-webui
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: locust
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  # Селектор мастер-пода Locust. Оператор помечает поды лейблом
+  # performance-test-pod-name=<name>-master (см. locust-k8s-operator).
+  selector:
+    performance-test-pod-name: {{ .Values.locustTest.name }}-master
+  ports:
+  - name: web-ui
+    protocol: TCP
+    port: {{ .Values.webui.port }}
+    targetPort: {{ .Values.webui.port }}
