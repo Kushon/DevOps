@@ -45,14 +45,51 @@ labels:
 annotations:
   prometheus.io/scrape: "false"
 
-# Resource limits and requests (optional)
+# Resource limits and requests
+# Значения подобраны по стресс-тесту Locust (см. loadtest/README.md).
+# Профиль: приложение CPU-bound — на нагрузке упиралось в лимит 500m уже при 300 юзерах,
+# память держится низко (пик ~105Mi). Поэтому поднимаем CPU-лимит (запас под burst до того,
+# как HPA добавит реплики), память приводим к реальному пику с запасом.
+# requests.cpu=250m задаёт базу для HPA (target 60% => скейл при ~150m средних).
 resources:
   limits:
-    cpu: "500m"
-    memory: "512Mi"
+  # было 500m/512Mi 
+    cpu: "1000m"
+    memory: "256Mi"
   requests:
-    cpu: "100m"
+  # было 100m
+    cpu: "250m"
     memory: "128Mi"
+
+# Horizontal Pod Autoscaler (HPA) для backend API.
+# Требует заданных requests.cpu и работающего metrics-server.
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  # Целевая средняя утилизация CPU относительно requests.cpu
+  targetCPUUtilizationPercentage: 60
+  # Память по умолчанию не масштабируем (оставить пустым, чтобы отключить метрику)
+  targetMemoryUtilizationPercentage: ""
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+    scaleDown:
+      # Окно стабилизации перед уменьшением числа реплик
+      stabilizationWindowSeconds: 300
+
+# Vertical Pod Autoscaler (VPA) — режим рекомендаций.
+# Требует установленного VPA (recommender/updater/admission-controller) в кластере.
+vpa:
+  enabled: true
+  # "Off" = только рекомендации, без авто-применения (не конфликтует с HPA по CPU)
+  updateMode: "Off"
+  minAllowed:
+    cpu: "50m"
+    memory: "64Mi"
+  maxAllowed:
+    cpu: "1"
+    memory: "1Gi"
 
 # Pod security and configuration
 securityContext:

@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+# Результаты прогонов (генерируются, не версионируем)
+results_*.csv
+top_*.log
+locust_*.err

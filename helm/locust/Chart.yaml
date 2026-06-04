@@ -1,0 +1,9 @@
+apiVersion: v2
+name: locust
+description: >-
+  Деплой нагрузочного теста cat-api через locust-k8s-operator.
+  Содержит ConfigMap с locustfile.py, ресурс LocustTest (load-test-v2),
+  Service для web UI (load-test-v2-webui:8089) и Ingress к нему.
+type: application
+version: 0.1.0
+appVersion: "2.44.0"

@@ -1,0 +1,28 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.locustTest.name }}-webui-ingress
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: locust
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+  - host: {{ .Values.ingress.host | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # Обращается к сервису load-test-v2-webui, порт 8089
+            name: {{ .Values.locustTest.name }}-webui
+            port:
+              number: {{ .Values.webui.port }}
+{{- end }}

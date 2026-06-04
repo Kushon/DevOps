@@ -1,0 +1,35 @@
+# Namespace для ресурсов нагрузочного теста
+namespace: "cat-api-ns"
+
+# Параметры теста LocustTest. Имя фиксировано как load-test-v2,
+# чтобы создаваемые оператором ресурсы (мастер-под и т.д.) и наш
+# Service web UI назывались load-test-v2-* (load-test-v2-webui).
+locustTest:
+  name: "load-test-v2"
+  image: "locustio/locust:2.44.0"
+  imagePullPolicy: "IfNotPresent"
+
+  # Цель нагрузки — внутрикластерный сервис backend cat-api
+  targetHost: "http://cat-api-back-service.cat-api-ns:8000"
+
+  # Настройки, аналогичные Части 2 (см. loadtest/README.md):
+  # максимум юзеров на грани отказов, прирост/с, длительность.
+  users: 600
+  spawnRate: 80
+  runTime: "5m"
+
+  # Распределённый режим: воркеры генерируют нагрузку
+  workerReplicas: 2
+
+# Web UI Locust master (порт 8089). Service создаётся этим чартом,
+# т.к. v2-оператор не публикует 8089 через свой master-Service.
+webui:
+  # Имя сервиса должно быть <locustTest.name>-webui => load-test-v2-webui
+  port: 8089
+
+# Ingress к web UI
+ingress:
+  enabled: true
+  className: "traefik"
+  host: "locust.local"
+  annotations: {}

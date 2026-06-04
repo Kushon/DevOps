@@ -1,0 +1,29 @@
+{{- if .Values.vpa.enabled }}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "back.fullname" . }}-vpa
+  namespace: {{ .Values.namespace | default $.Values.global.namespace | default .Release.Namespace }}
+  labels:
+    {{ include "back.labels" . | nindent 4 }}
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "back.fullname" . }}-deployment
+  # Best practice: с включённым HPA по CPU держим VPA в режиме рекомендаций ("Off"),
+  # чтобы они не конфликтовали по одному и тому же ресурсу. VPA выдаёт рекомендации,
+  # масштабирование реплик делает HPA.
+  updatePolicy:
+    updateMode: {{ .Values.vpa.updateMode | quote }}
+  resourcePolicy:
+    containerPolicies:
+    - containerName: '*'
+      controlledResources: ["cpu", "memory"]
+      minAllowed:
+        cpu: {{ .Values.vpa.minAllowed.cpu }}
+        memory: {{ .Values.vpa.minAllowed.memory }}
+      maxAllowed:
+        cpu: {{ .Values.vpa.maxAllowed.cpu }}
+        memory: {{ .Values.vpa.maxAllowed.memory }}
+{{- end }}
